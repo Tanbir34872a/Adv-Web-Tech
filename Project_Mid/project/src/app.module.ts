@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import {DummyModule} from './dummy/dummy.module'
 
 @Module({
   imports: [
@@ -15,9 +16,10 @@ import { AuthModule } from './auth/auth.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       database: 'HMS',
       synchronize: true,
-      //logging: true,
+      logging: true,
     }),
-    AuthModule
+    AuthModule,
+    DummyModule
   ],
   controllers: [AppController],
   providers: [AppService],
