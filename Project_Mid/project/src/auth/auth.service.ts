@@ -3,14 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Login } from './entities/login.entity';
 import { compareSync } from 'bcryptjs';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt'; // Import JwtService
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Login)
     private readonly loginRepository: Repository<Login>,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService, // Inject JwtService
   ) {}
 
   async verify(uname: string, pass: string): Promise<string> {
@@ -20,9 +20,8 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Username or Password');
     }
 
+    // Generate JWT token
     const payload = { uname: user.uname, utype: user.utype };
-    const accessToken = this.jwtService.sign(payload);
-
-    return accessToken;
+    return this.jwtService.sign(payload);
   }
 }

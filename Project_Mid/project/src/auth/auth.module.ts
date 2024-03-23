@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import * as cookieParser from 'cookie-parser'; 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { Login } from './entities/login.entity';
@@ -9,11 +10,15 @@ import { AuthController } from './auth.controller';
   imports: [
     TypeOrmModule.forFeature([Login]),
     JwtModule.register({
-      secret: 'your-secret-key', // Set your own secret key here
-      signOptions: { expiresIn: '1h' }, // Set expiration time as needed
+      secret: 'meow',
+      signOptions: { expiresIn: '5m' },
     }),
   ],
   providers: [AuthService],
   controllers: [AuthController],
 })
-export class AuthModule {}
+export class AuthModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cookieParser()).forRoutes('*');
+  }
+}

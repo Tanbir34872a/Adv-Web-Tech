@@ -3,7 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import {DummyModule} from './dummy/dummy.module'
+import { DummyModule } from './dummy/dummy.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -18,8 +20,12 @@ import {DummyModule} from './dummy/dummy.module'
       synchronize: true,
       logging: true,
     }),
+    JwtModule.register({
+      secret: 'meow', // Secret key used to sign JWT tokens
+    }),
     AuthModule,
-    DummyModule
+    DummyModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
