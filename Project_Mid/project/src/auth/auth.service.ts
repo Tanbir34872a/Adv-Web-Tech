@@ -1,31 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Login } from './entities/login.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { hashSync } from 'bcryptjs';
+import { compareSync } from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Login)
     private readonly loginRepository: Repository<Login>,
+    private readonly jwtService: JwtService,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<any> {
-    // Hash the password
-    const hashedPassword = hashSync(createUserDto.pass, 10);
+  async verify(uname: string, pass: string): Promise<string> {
+    const user = await this.loginRepository.findOne({ where: { uname } });
 
-    // Create a new user entity
-    const newUser = this.loginRepository.create({
-      uname: createUserDto.uname,
-      pass: hashedPassword,
-      utype: createUserDto.utype,
-    });
+    if (!user || !compareSync(pass, user.pass)) {
+      throw new UnauthorizedException('Invalid Username or Password');
+    }
 
-    // Save the new user to the database
-    await this.loginRepository.save(newUser);
+    const payload = { uname: user.uname, utype: user.utype };
+    const accessToken = this.jwtService.sign(payload);
 
-    return { message: 'User created successfully' };
+    return accessToken;
   }
 }
