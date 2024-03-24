@@ -6,6 +6,10 @@ import { AuthModule } from './auth/auth.module';
 import { DummyModule } from './dummy/dummy.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { JwtModule } from '@nestjs/jwt';
+import { EmployeeModule } from './employee/employee.module';
+import { PatientModule } from './patient/patient.module';
+import { NotificationModule } from './notifications/notifications.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
   imports: [
@@ -26,6 +30,10 @@ import { JwtModule } from '@nestjs/jwt';
     AuthModule,
     DummyModule,
     DashboardModule,
+    EmployeeModule,
+    PatientModule,
+    NotificationModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],
