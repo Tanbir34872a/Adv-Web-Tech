@@ -5,9 +5,10 @@ import { Appointment } from './entities/appointment.entity';
 import { PatientService } from './patient.service';
 import { PatientController } from './patient.controller';
 import { CreatePatientValidationMiddleware } from './create-patient-validation.middleware'; 
+import { Login } from '../auth/entities/login.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Patient, Appointment])],
+  imports: [TypeOrmModule.forFeature([Patient, Appointment, Login])],
   controllers: [PatientController],
   providers: [PatientService],
 })

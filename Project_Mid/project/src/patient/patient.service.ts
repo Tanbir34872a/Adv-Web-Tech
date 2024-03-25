@@ -6,6 +6,8 @@ import { Appointment } from './entities/appointment.entity';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { AppointmentDto } from './dto/appointment.dto';
+import { Login } from '../auth/entities/login.entity'
+import { hashSync } from 'bcryptjs';
 
 @Injectable()
 export class PatientService {
@@ -14,11 +16,24 @@ export class PatientService {
     private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Appointment)
     private readonly appointmentRepository: Repository<Appointment>,
+    @InjectRepository(Login)
+    private readonly loginRepository: Repository<Login>,
   ) {}
 
   async createPatient(createPatientDto: CreatePatientDto): Promise<Patient> {
     const patient = this.patientRepository.create(createPatientDto);
-    return this.patientRepository.save(patient);
+    const savedPatient = await this.patientRepository.save(patient);
+
+    const uname = savedPatient.patient_id.toString();
+    // Default password
+    const password = 'Password123';
+    const hashedPassword = hashSync(password, 10);
+    const utype = "patient";
+
+    const login = this.loginRepository.create({uname, pass: hashedPassword, utype})
+    await this.loginRepository.save(login);
+
+    return savedPatient;
   }
 
   async findAllPatient(): Promise<Patient[]> {
@@ -81,6 +96,7 @@ export class PatientService {
   
     const { doctor, ...rest } = appointmentDto;
     appointment.time = rest.time;
+    appointment.status = rest.status;
   
     return this.appointmentRepository.save(appointment);
   }

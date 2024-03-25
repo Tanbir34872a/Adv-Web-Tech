@@ -10,6 +10,7 @@ import { EmployeeModule } from './employee/employee.module';
 import { PatientModule } from './patient/patient.module';
 import { NotificationModule } from './notifications/notifications.module';
 import { FeedbackModule } from './feedback/feedback.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { FeedbackModule } from './feedback/feedback.module';
     PatientModule,
     NotificationModule,
     FeedbackModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

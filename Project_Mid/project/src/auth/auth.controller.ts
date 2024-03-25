@@ -1,6 +1,9 @@
-import { Controller, Post, Body, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, Res, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtInterceptor } from './jwt.interceptor';
+import { Response } from 'express';
+import { LoginDto } from './login.dto';
+
 
 @Controller('auth')
 export class AuthController {
@@ -8,9 +11,16 @@ export class AuthController {
 
   @UseInterceptors(JwtInterceptor)
   @Post('login')
-  async login(@Body() body: { uname: string; pass: string }) {
-    const { uname, pass } = body;
+  async login(@Body() loginDto: LoginDto) {
+    const { uname, pass } = loginDto;
     const jwtToken = await this.authService.verify(uname, pass);
     return { jwtToken };
   }
+
+  @Post('logout')
+  async logout(@Res() res: Response) {
+    res.clearCookie('jwt'); // Assuming 'auth_cookie' is the name of your authentication cookie
+    return res.status(HttpStatus.OK).send();
+  }
+
 }

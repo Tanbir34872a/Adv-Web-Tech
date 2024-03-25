@@ -19,7 +19,7 @@ export class EmployeeController {
     return this.employeeService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id')//for partial search
   findOne(@Param('id') search: string) {
     return this.employeeService.findPartialMatch(search);
   }

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Feedback } from './feedback.entity';
+import { CreateFeedbackDto } from './dto/create-feedback.dto';
 
 @Injectable()
 export class FeedbackService {
@@ -10,7 +11,8 @@ export class FeedbackService {
     private readonly feedbackRepository: Repository<Feedback>,
   ) {}
 
-  async createFeedback(feedback: Feedback): Promise<Feedback> {
+  async createFeedback(createFeedbackDto: CreateFeedbackDto): Promise<Feedback> {
+    const feedback = this.feedbackRepository.create(createFeedbackDto);
     return this.feedbackRepository.save(feedback);
   }
 
@@ -19,7 +21,7 @@ export class FeedbackService {
   }
 
   async findFeedbackById(feed_id: number): Promise<Feedback> {
-    const feedback = await this.feedbackRepository.findOne({ where: { feed_id: feed_id } });
+    const feedback = await this.feedbackRepository.findOne({where:{feed_id}});
     if (!feedback) {
       throw new NotFoundException('Feedback not found');
     }
@@ -27,10 +29,7 @@ export class FeedbackService {
   }
 
   async deleteFeedback(feed_id: number): Promise<void> {
-    const feedback = await this.feedbackRepository.findOne({ where: { feed_id: feed_id } });
-    if (!feedback) {
-      throw new NotFoundException('Feedback not found');
-    }
+    const feedback = await this.findFeedbackById(feed_id);
     await this.feedbackRepository.remove(feedback);
   }
 }
