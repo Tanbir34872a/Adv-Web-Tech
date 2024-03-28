@@ -19,7 +19,7 @@ export class AuthController {
 
   @Post('logout')
   async logout(@Res() res: Response) {
-    res.clearCookie('jwt'); // Assuming 'auth_cookie' is the name of your authentication cookie
+    res.clearCookie('jwt'); // Since'jwt' is the name of the authentication cookie
     return res.status(HttpStatus.OK).send();
   }
 
