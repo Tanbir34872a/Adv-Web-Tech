@@ -2,6 +2,7 @@
   "dependencies": {
     "@nestjs/jwt": "^10.2.0",
     "pg": "^8.11.3",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "vite": "^5.2.7"
   }
 }
