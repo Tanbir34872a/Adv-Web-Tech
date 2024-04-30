@@ -1,0 +1,1 @@
+Implementing a product management system which should include 2 user types, ADMIN & Customer. Admin can do all CURD operations and customers can only view products and can perform the add-to-cart feature. There should be a profile feature for all user types. Admin can add/delete/update product & customer info.

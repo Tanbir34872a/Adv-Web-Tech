@@ -21,7 +21,6 @@ export class EmployeeModule {
       .apply(ValidationMiddleware)
       .forRoutes(
         { path: 'employee', method: RequestMethod.POST }, // Apply middleware to POST /employee route
-        // Add other routes that need validation
       );
   }
 }
