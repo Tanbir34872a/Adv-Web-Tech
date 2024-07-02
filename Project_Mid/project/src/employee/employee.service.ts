@@ -1,6 +1,6 @@
-import { Injectable,  NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, Transaction } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { hashSync } from 'bcryptjs';
 import { Login } from '../auth/entities/login.entity';
 import { Employee } from './entities/employee.entity';
@@ -16,7 +16,7 @@ export class EmployeeService {
     private readonly loginRepository: Repository<Login>,
   ) {}
 
-  async createEmployee(createEmployeeDto: CreateEmployeeDto): Promise<Employee> {
+  async createEmployee(createEmployeeDto: CreateEmployeeDto, profilePicture: Buffer): Promise<Employee> {
     // Generate uname from role
     const role = createEmployeeDto.role;
     const uname = `${role.charAt(0).toLowerCase()}${await this.getNextNumber(role)}`;
@@ -32,7 +32,7 @@ export class EmployeeService {
 
     try {
       // Create Employee entity
-      const employee = this.employeeRepository.create({ ...createEmployeeDto, uname });
+      const employee = this.employeeRepository.create({ ...createEmployeeDto, uname, profilePicture });
 
       // Save employee entity
       const savedEmployee = await this.employeeRepository.save(employee);
@@ -73,7 +73,6 @@ export class EmployeeService {
     return maxNumber + 1;
   }
 
-
   async findAll(): Promise<Employee[]> {
     return this.employeeRepository.find();
   }
@@ -90,11 +89,10 @@ export class EmployeeService {
     });
   }
 
-
   async update(id: string, updateEmployeeDto: UpdateEmployeeDto): Promise<Employee> {
-    const employee = await this.employeeRepository.findOne({ where: { uname:id } });
+    const employee = await this.employeeRepository.findOne({ where: { uname: id } });
     if (!employee) {
-      throw new Error(`Employee with id ${id} not found`);
+      throw new NotFoundException(`Employee with id ${id} not found`);
     }
 
     // Update employee properties individually
@@ -117,15 +115,14 @@ export class EmployeeService {
     // Save the updated employee object to the database
     return this.employeeRepository.save(employee);
   }
-  
-  async remove(id: string, employeeRepository?: Repository<Employee>, 
-    loginRepository?: Repository<Login>): Promise<void> {
+
+  async remove(id: string, employeeRepository?: Repository<Employee>, loginRepository?: Repository<Login>): Promise<void> {
     // Use injected transaction repositories or fallback to the default repositories
     const employeeRepo = employeeRepository || this.employeeRepository;
     const loginRepo = loginRepository || this.loginRepository;
 
     // Find the employee to be removed
-    const employee = await employeeRepo.findOne({where: {uname: id}});
+    const employee = await employeeRepo.findOne({ where: { uname: id } });
     if (!employee) {
       throw new NotFoundException(`Employee with id ${id} not found`);
     }
@@ -134,7 +131,7 @@ export class EmployeeService {
     await employeeRepo.remove(employee);
 
     // Also remove the corresponding login record
-    const login = await loginRepo.findOne({ where: {uname: id }});
+    const login = await loginRepo.findOne({ where: { uname: id } });
     if (login) {
       await loginRepo.remove(login);
     }

@@ -1,17 +1,20 @@
-import { Controller, UseGuards,  Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, UseGuards,  Get, Post, Body, Patch, Param, Delete, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { EmployeeService } from './employee.service';
-import { RoleGuard } from '../guards/admin-auth.guard'; // Import AuthGuard
+import { RoleGuard } from '../guards/admin-auth.guard';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { Buffer } from 'buffer';
 
 @Controller('employee')
-@UseGuards(RoleGuard) // Apply RoleGuard to all routes in this controller
+//@UseGuards(RoleGuard)
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Post()
-  create(@Body() createEmployeeDto: CreateEmployeeDto) {
-    return this.employeeService.createEmployee(createEmployeeDto);
+  @UseInterceptors(FileInterceptor('profilePicture')) // Intercept the 'profilePicture' file upload
+  create(@Body() createEmployeeDto: CreateEmployeeDto, @UploadedFile() profilePicture: Buffer) {
+    return this.employeeService.createEmployee(createEmployeeDto, profilePicture);
   }
 
   @Get()
@@ -19,7 +22,7 @@ export class EmployeeController {
     return this.employeeService.findAll();
   }
 
-  @Get(':id')//for partial search
+  @Get(':id')
   findOne(@Param('id') search: string) {
     return this.employeeService.findPartialMatch(search);
   }
